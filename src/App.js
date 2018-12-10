@@ -11,6 +11,8 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import Pagination from 'react-js-pagination';
 import {getCharacters} from './services/MarvelService';
+import Fade from '@material-ui/core/Fade';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import './App.css'
 
 class App extends Component {
@@ -26,11 +28,13 @@ class App extends Component {
         pageRangeDisplayed: 10,
         totalItemsCount: 0,
         itemsCountPerPage: 10,
-      }
+      },
+      loadingRequest: false
     }
   };
 
   searchCharacters(pageNumber){
+    this.setState({loadingRequest: true});
     getCharacters(pageNumber).then(res => {
       if(res.data.code === 200) {
         this.setState({
@@ -38,7 +42,8 @@ class App extends Component {
           pagination: {
             totalItemsCount: res.data.data.total,
             activePage: pageNumber
-          }
+          },
+          loadingRequest: false
         });
       }
     })
@@ -67,6 +72,9 @@ class App extends Component {
             </Typography>
           </Toolbar>
         </AppBar>
+        <Fade in={this.state.loadingRequest}>
+          <LinearProgress/>
+        </Fade>
         <List dense>
           {results.map(value => (
             <ListItem key={value.id} button>
