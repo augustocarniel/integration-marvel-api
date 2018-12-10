@@ -9,8 +9,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
-// import Pagination from 'react-js-pagination';
+import Pagination from 'react-js-pagination';
 import {getCharacters} from './services/MarvelService';
+import './App.css'
 
 class App extends Component {
 
@@ -29,35 +30,27 @@ class App extends Component {
     }
   };
 
-  componentDidMount(){
-      getCharacters().then(res => {
-        console.log(res.data)
-        if(res.data.code === 200) {
-          this.setState({
-            data: res.data.data,
-            pagination: {
-              totalItemsCount: res.data.data.total,
-            }
-          });
-        }
-      });
+  searchCharacters(pageNumber){
+    getCharacters(pageNumber).then(res => {
+      if(res.data.code === 200) {
+        this.setState({
+          data: res.data.data,
+          pagination: {
+            totalItemsCount: res.data.data.total,
+            activePage: pageNumber
+          }
+        });
+      }
+    })
   };
 
-  // searchSchedules() {
-  //   getSchedules(this.state.pagination.activePage, this.state.pagination.itemsCountPerPage)
-  //     .then((response) => {
-  //       const pagination = this.state.pagination;
-  //       pagination.totalItemsCount = response.data.totalElements;
-  //       this.setState({ pagination });
-  //     });
-  // }
+  handlePageChange = (pageNumber) => {
+    this.searchCharacters(pageNumber);
+  };
 
-  handlePageChange(pageNumber) {
-    const pagination = this.state.pagination;
-    pagination.activePage = pageNumber;
-    this.setState({ pagination });
-    this.searchSchedules();
-  }
+  componentDidMount(){
+    this.searchCharacters(this.state.pagination.activePage);
+  };
 
   render() {
     const results = this.state.data.results;
@@ -87,13 +80,13 @@ class App extends Component {
             </ListItem>
           ))}
         </List>
-        {/* <Pagination
+        <Pagination
             hideNavigation={true}
             activePage={this.state.pagination.activePage}
             itemsCountPerPage={this.state.pagination.itemsCountPerPage}
             totalItemsCount={this.state.pagination.totalItemsCount}
             pageRangeDisplayed={this.state.pagination.pageRangeDisplayed}
-            onChange={this.handlePageChange} /> */}
+            onChange={this.handlePageChange} />
       </div>
     );
   }
